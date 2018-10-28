@@ -91,7 +91,7 @@ class Player(Abstract_Player):
         ):
             has_left_play = True
             col -= 1    
-        if has_left_play and col-1 >= 0: 
+        if has_left_play and col-1 >= 0 and tabuleiro[row][col-1] is None: 
             possible_plays.append((row, col-1))
 
         row = piece[0]
@@ -104,7 +104,7 @@ class Player(Abstract_Player):
         ):
             has_right_play = True
             col += 1  
-        if has_right_play and col+1 < 8: 
+        if has_right_play and col+1 < 8 and tabuleiro[row][col+1] is None: 
             possible_plays.append((row, col+1))
 
         row = piece[0]
@@ -117,7 +117,7 @@ class Player(Abstract_Player):
         ):
             has_up_play = True
             row -= 1
-        if has_up_play and row-1 >= 0: 
+        if has_up_play and row-1 >= 0 and tabuleiro[row-1][col] is None: 
             possible_plays.append((row-1, col))
 
         row = piece[0]
@@ -130,7 +130,7 @@ class Player(Abstract_Player):
         ):
             has_down_play = True
             row += 1
-        if has_down_play and row+1 < 8: 
+        if has_down_play and row+1 < 8 and tabuleiro[row+1][col] is None: 
             possible_plays.append((row+1, col))
         
         print(possible_plays)
@@ -147,8 +147,6 @@ class Player(Abstract_Player):
         ):
             print(row-1)
             print(col-1)
-
-            
 
     def get_player_score(self):
         print(self.player_score)
