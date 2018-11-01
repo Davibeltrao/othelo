@@ -26,12 +26,13 @@ class Abstract_Player(ABC):
         raise NotImplementedError
 
 
+
 class Player(Abstract_Player):
     def __init__(self, player_color):
         super().__init__(player_color)
 
     def run_play(self, tabuleiro):
-        self.get_valid_plays(self.get_pieces(tabuleiro), tabuleiro)
+        self.get_valid_plays(tabuleiro)
         print("----------------")
         print("Suas opcoes sao:")
         cont = 0
@@ -127,7 +128,8 @@ class Player(Abstract_Player):
                 tabuleiro[i][col] = self.player
                 # print(i)
 
-    def get_valid_plays(self, my_pieces, tabuleiro):
+    def get_valid_plays(self, tabuleiro):
+        my_pieces = self.get_pieces(tabuleiro)
         self.possible_plays = []
         for piece in my_pieces:
             #print(piece)
@@ -136,7 +138,7 @@ class Player(Abstract_Player):
         return None if len(self.possible_plays) == 0 else self.possible_plays
         
     def has_valid_plays(self, tabuleiro):
-        if self.get_valid_plays(self.get_pieces(tabuleiro), tabuleiro) is None:
+        if self.get_valid_plays(tabuleiro) is None:
             return False
         else:
             return True
@@ -236,18 +238,7 @@ class Player(Abstract_Player):
         return pieces    
 
 
-class AI(Abstract_Player):
+class AI(Player):
     def __init__(self, player_color):
         super().__init__(player_color)
-
-    def get_pieces(self):
-        pass
     
-    def get_player_score(self):
-        pass
-    
-    def get_valid_plays(self):
-        pass
-    
-    def has_valid_plays(self):
-        pass

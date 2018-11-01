@@ -15,4 +15,4 @@ ai = player.AI("Black")
 
 #tabuleiro._print_tabuleiro()
 
-game.Game(tabuleiro, white, black)
+game.Game(tabuleiro, white, ai)
