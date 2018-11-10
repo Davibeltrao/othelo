@@ -5,6 +5,8 @@ import time
 import sys
 import copy
 
+DEPTH_NUM = 3
+
 class Abstract_Player(ABC):
     def __init__(self, player_color):
         self.player = player_color
@@ -55,43 +57,47 @@ class Player(Abstract_Player):
         self.play_catch(row, col, tabuleiro)
         tabuleiro[row][col] = self.player
 
-    def play_catch(self, row, col, tabuleiro):
+    def play_catch(self, row, col, tabuleiro, player=None):
+        if player is None:
+            player = self.player
+
+
         has_left_play = False
         left_catch = 0
         col_aux = col
         while(
             col_aux-1 >= 0 and
-            tabuleiro[row][col_aux-1] != self.player and
+            tabuleiro[row][col_aux-1] != player and
             tabuleiro[row][col_aux-1] is not None    
         ):
             has_left_play = True
             col_aux -= 1
             left_catch += 1    
-        if has_left_play and col_aux-1 >= 0 and tabuleiro[row][col_aux-1] == self.player: 
+        if has_left_play and col_aux-1 >= 0 and tabuleiro[row][col_aux-1] == player: 
             #self.possible_plays.append((row, col-1, left_catch))
             for i in range(col_aux-1, col):
-                tabuleiro[row][i] = self.player
+                tabuleiro[row][i] = player
                 #print(i)
 
         has_right_play = False
         right_catch = 0
         col_aux = col
-        print("Actual row: {} col: {} ".format(row, col))
+        #print("Actual row: {} col: {} ".format(row, col))
         while(
             col_aux+1 < 8 and
-            tabuleiro[row][col_aux+1] != self.player and
+            tabuleiro[row][col_aux+1] != player and
             tabuleiro[row][col_aux+1] is not None
         ):
-            print("ENtrei DENTRO PORRAIFAOISHFOSIJHFOJW")
+        #    print("ENtrei DENTRO PORRAIFAOISHFOSIJHFOJW")
             has_right_play = True
             col_aux += 1
             right_catch += 1    
-        if has_right_play and col_aux+1 < 8 and tabuleiro[row][col_aux+1] == self.player: 
+        if has_right_play and col_aux+1 < 8 and tabuleiro[row][col_aux+1] == player: 
             # self.possible_plays.append((row, col-1, left_catch))
-            print("Col: ")
+        #    print("Col: ")
             for i in range(col, col_aux+1):
-                print(i)
-                tabuleiro[row][i] = self.player
+                #print(i)
+                tabuleiro[row][i] = player
                 # print(i)
 
         has_up_play = False
@@ -99,23 +105,23 @@ class Player(Abstract_Player):
         row_aux = row
         while(
             row_aux-1 >= 0 and 
-            tabuleiro[row_aux-1][col] != self.player and
+            tabuleiro[row_aux-1][col] != player and
             tabuleiro[row_aux-1][col] is not None
             
         ):
             has_up_play = True
             row_aux -= 1
             up_catch += 1    
-        if has_up_play and row_aux-1 >= 0 and tabuleiro[row_aux-1][col] == self.player: 
+        if has_up_play and row_aux-1 >= 0 and tabuleiro[row_aux-1][col] == player: 
             # self.possible_plays.append((row, col-1, left_catch))
             for i in range(row_aux-1, row):
-                tabuleiro[i][col] = self.player
+                tabuleiro[i][col] = player
                 # print(i)
         
         has_down_play = False
         down_catch = 0
         row_aux = row
-        print("ROW AUX: ", row_aux)
+        #print("ROW AUX: ", row_aux)
         while(
             row_aux+1 < 8 and
             tabuleiro[row_aux+1][col] != self.player and
@@ -226,7 +232,7 @@ class Player(Abstract_Player):
             row-1 > 0 and
             col-1 > 0
         ):
-            print("Diagonal")
+            #print("Diagonal")
             print(row-1)
             print(col-1)
 
@@ -249,19 +255,23 @@ class AI(Player):
     
     def get_enemy_pieces(self, tabuleiro):
         pieces = []
+        #print("Player: ", self.player)
         for row in range(0, len(tabuleiro)):
             for col in range(0, len(tabuleiro[0])):
+                #print("Player=", self.player)
                 if tabuleiro[row][col] != self.player and tabuleiro[row][col] is not None:
+                #    print("Position: ", tabuleiro[row][col])
                     pieces.append((row, col))
         return pieces   
 
     def get_valid_enemy_plays(self, board):
         enemy_pieces = self.get_enemy_pieces(board)
+        #print("Enemy pieces: ", enemy_pieces)
         self.possible_plays = []
         for piece in enemy_pieces:
             #print(piece)
             #self.diagonal_catch(piece, tabuleiro)
-            self.side_catch(piece, board, player='Black')  # IF PLAYER1 is WHITE
+            self.side_catch(piece, board, player='White')  # IF PLAYER1 is WHITE
         return None if len(self.possible_plays) == 0 else self.possible_plays
 
     def run_play(self, tabuleiro, ai_depth=3):
@@ -270,50 +280,86 @@ class AI(Player):
         """
         self.tabuleiro = copy.deepcopy(tabuleiro)
         plays = self.get_valid_plays(tabuleiro)
-        
-        print(self.minimax(self.tabuleiro, 3, True))
+        print("START MINIMAX")
+                
+        eval, play_coord = self.minimax(self.tabuleiro, None, DEPTH_NUM, True)
+        print("END OF MINIMAX: {}<-->{}".format(eval, play_coord))
         #print(plays)
+        self.play_catch(play_coord[0], play_coord[1], tabuleiro, player="Black")
+        tabuleiro[play_coord[0]][play_coord[1]] = self.player
+        
         print(ai_depth)
         
 
 
-    def minimax(self, ai_board, depth, maximizing):
+    def minimax(self, ai_board, player_play, depth, maximizing):
         if depth == 0:
-            return self._eval_tabuleiro(ai_board)
+            return self._eval_tabuleiro(ai_board), player_play
         
         if maximizing:
             maxEval = -sys.maxsize
+            maxPlay = None
+            #self._print_tabuleiro(ai_board)
             ai_plays = self.get_valid_plays(ai_board)
             for play in ai_plays:
-                print("START MINIMAX")
+                #print("Actual play: ", play)
                 actual_board = copy.deepcopy(ai_board)
-                self._print_tabuleiro(actual_board)
-                self.play_catch(play[0], play[1], actual_board)
+                #print("MAXIMIZING")
+                self.play_catch(play[0], play[1], actual_board, player="Black")
                 actual_board[play[0]][play[1]] = self.player
-                self._print_tabuleiro(actual_board)
-                #print(actual_board)
-                #self._print_tabuleiro(actual_board)
-                eval = self.minimax(actual_board, depth - 1, False)
-                maxEval = max(maxEval, eval)
-            return maxEval 
+            #    self._print_tabuleiro(actual_board)
+                #print("Depth: ", depth)
+                #print("maxEval: ", maxEval)
+                #input("Enter to pass forward")
+                if depth == DEPTH_NUM:
+                    eval, play_coord = self.minimax(actual_board, play, depth - 1, False)
+                else:
+                    eval, play_coord = self.minimax(actual_board, player_play, depth - 1, False)
+                #print("Eval: ", eval)
+                #if maxEval[0] != eval[0]:
+                #print("MaxEval:{} eval:{}".format(maxEval, eval))
+               
+                if maxEval < eval:
+                    maxEval = eval
+                    maxPlay = play_coord
+                #maxEval = max(maxEval, eval)
+                #print("After Change --> MaxEval:{} eval:{}".format(maxEval, eval))
+                #input("Enter to pass forward")                
+            return maxEval, maxPlay
         else:
-            print("ENTREI AQUI APOS")
-            self._print_tabuleiro(ai_board)
+            #print("MINIMIZING")
             minEval = sys.maxsize
+            minPlay = None
+            #self._print_tabuleiro(ai_board)
             enemy_plays = self.get_valid_enemy_plays(ai_board)
             for enemy_play in enemy_plays:
+            #    print("Actual enemy play: ", enemy_play)
                 actual_board = copy.deepcopy(ai_board)
-                self.play_catch(enemy_play[0], enemy_play[1], actual_board)
+                self.play_catch(enemy_play[0], enemy_play[1], actual_board, player="White")
                 actual_board[enemy_play[0]][enemy_play[1]] = "White"
-                eval = self.minimax(actual_board, depth - 1, True)
-                minEval = min(minEval, eval)
-            return minEval
+            #    self._print_tabuleiro(actual_board)
+            #    print("Depth: ", depth)
+            #    print("minEval: ", minEval)
+                #input("Enter to pass enemy forward")
+                eval, play_coord  = self.minimax(actual_board, player_play, depth - 1, True)
+            #    print("Eval: ", eval)
+            #    print("MinEval:{} eval:{}".format(minEval, eval))
+                
+                if minEval > eval:
+                    minEval = eval
+                    minPlay = play_coord
+            #        print("After Change --> MinEval:{} eval:{}".format(minEval, eval))
+                
+                #minEval = min(minEval, eval)
+                #input("Enter to pass forward")
+
+            return minEval, minPlay
 
     def _eval_tabuleiro(self, tabuleiro):
         white = 0
         black = 0
         for row in tabuleiro:
-            print(row)
+            #print(row)
             for cell in row:
                 if cell == 'White':
                     white += 1
