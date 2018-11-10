@@ -121,19 +121,18 @@ class Player(Abstract_Player):
         has_down_play = False
         down_catch = 0
         row_aux = row
-        #print("ROW AUX: ", row_aux)
         while(
             row_aux+1 < 8 and
-            tabuleiro[row_aux+1][col] != self.player and
+            tabuleiro[row_aux+1][col] != player and
             tabuleiro[row_aux+1][col] is not None
         ):
             has_down_play = True
             row_aux += 1
             down_catch += 1    
-        if has_down_play and row_aux+1 < 8 and tabuleiro[row_aux+1][col] == self.player: 
+        if has_down_play and row_aux+1 < 8 and tabuleiro[row_aux+1][col] == player: 
             # self.possible_plays.append((row, col-1, left_catch))
             for i in range(row, row_aux+1):
-                tabuleiro[i][col] = self.player
+                tabuleiro[i][col] = player
                 # print(i)
 
     def get_valid_plays(self, tabuleiro):
@@ -302,15 +301,15 @@ class AI(Player):
             #self._print_tabuleiro(ai_board)
             ai_plays = self.get_valid_plays(ai_board)
             for play in ai_plays:
-                #print("Actual play: ", play)
+            #    print("Actual play: ", play)
                 actual_board = copy.deepcopy(ai_board)
-                #print("MAXIMIZING")
+            #    print("MAXIMIZING")
                 self.play_catch(play[0], play[1], actual_board, player="Black")
                 actual_board[play[0]][play[1]] = self.player
             #    self._print_tabuleiro(actual_board)
-                #print("Depth: ", depth)
-                #print("maxEval: ", maxEval)
-                #input("Enter to pass forward")
+            #    print("Depth: ", depth)
+            #    print("maxEval: ", maxEval)
+            #    input("Enter to pass forward")
                 if depth == DEPTH_NUM:
                     eval, play_coord = self.minimax(actual_board, play, depth - 1, False)
                 else:
@@ -340,7 +339,7 @@ class AI(Player):
             #    self._print_tabuleiro(actual_board)
             #    print("Depth: ", depth)
             #    print("minEval: ", minEval)
-                #input("Enter to pass enemy forward")
+            #    input("Enter to pass enemy forward")
                 eval, play_coord  = self.minimax(actual_board, player_play, depth - 1, True)
             #    print("Eval: ", eval)
             #    print("MinEval:{} eval:{}".format(minEval, eval))
