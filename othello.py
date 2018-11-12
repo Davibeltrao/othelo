@@ -6,9 +6,9 @@ import os
 tabuleiro = game.Tabuleiro()
 
 print("#########################################")
-print("0 - Facil")
-print("1 - Medio")
-print("2 - Dificil")
+print("1 - Facil")
+print("2 - Medio")
+print("3 - Dificil")
 print("#########################################")
 difficult = int(input("Digite o numero da dificuldade desejado: "))
 

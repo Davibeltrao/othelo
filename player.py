@@ -433,7 +433,12 @@ class Player(Abstract_Player):
 class AI(Player):
     def __init__(self, player_color, difficult_level):
         super().__init__(player_color)
-        self.difficult_level = 3 if difficult_level == 1 else 5
+        if difficult_level == 1:
+            self.difficult_level = 1
+        elif difficult_level == 2:
+            self.difficult_level = 3
+        elif difficult_level == 3:
+            self.difficult_level = 5
         
     def get_enemy_pieces(self, tabuleiro):
         pieces = []
