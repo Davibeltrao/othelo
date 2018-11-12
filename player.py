@@ -546,6 +546,6 @@ class AI(Player):
                 elif cell == "Black":
                     print(colored('BLACK', 'red'), end="\t")
                 else:
-                    print(cell, end="\t")
+                    print("Espace", end="\t")
             print("\n")  
         print("---------------------------------------------------------------------")

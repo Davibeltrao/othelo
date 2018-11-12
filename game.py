@@ -41,7 +41,7 @@ class Tabuleiro:
                 elif cell == "Black":
                     print(colored('BLACK', 'red'), end="\t")
                 else:
-                    print(cell, end="\t")
+                    print("     ", end="\t")
             print("\n")  
         print("---------------------------------------------------------------------")
 
