@@ -11,7 +11,7 @@ class Tabuleiro:
             self.tabuleiro.append(row)            
         self._generate_black()
         self._generate_white()
-        self._print_tabuleiro()
+        #self._print_tabuleiro()
 
     def get_tabuleiro(self):
         return self.tabuleiro
@@ -45,12 +45,24 @@ class Tabuleiro:
             print("\n")  
         print("---------------------------------------------------------------------")
 
+    def eval_board(self):
+        white = 0
+        black = 0
+        for row in self.tabuleiro:
+            #print(row)
+            for cell in row:
+                if cell == 'White':
+                    white += 1
+                elif cell == 'Black':
+                    black += 1
+        return (black-white)
 
 class Game:
-    def __init__(self, tabuleiro, player1, player2):
+    def __init__(self, tabuleiro, player1, player2, difficult_level=1):
         self.tabuleiro = tabuleiro
         self.player1 = player1
         self.player2 = player2
+        self.difficult_level = difficult_level
         self.game_loop()
     
     def get_next_player(self):
@@ -69,8 +81,7 @@ class Game:
             self.actual_player = self.get_next_player()
             
              #valid_plays = self.actual_player.get_valid_plays(self.actual_player.get_pieces, self.tabuleiro.get_tabuleiro())
-            
-            
-               
+        
+              
             #time.sleep(1)
         pass
