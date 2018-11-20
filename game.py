@@ -75,7 +75,7 @@ class Game:
             self.player2.has_valid_plays(self.tabuleiro.get_tabuleiro())
             # self.actual_player.has_valid_plays(self.tabuleiro.get_tabuleiro())
         ):
-            if self.actual_player.get_valid_plays() is None:
+            if self.actual_player.get_valid_plays(self.tabuleiro.get_tabuleiro()) is None:
                 self.actual_player = self.get_next_player()
                 continue
 
