@@ -7,6 +7,7 @@ import copy
 
 DEPTH_NUM = 3
 
+
 class Abstract_Player(ABC):
     def __init__(self, player_color):
         self.player = player_color
@@ -30,7 +31,6 @@ class Abstract_Player(ABC):
         raise NotImplementedError
 
 
-
 class Player(Abstract_Player):
     def __init__(self, player_color):
         super().__init__(player_color)
@@ -41,7 +41,8 @@ class Player(Abstract_Player):
         print("Suas opcoes sao:")
         cont = 0
         for p in self.possible_plays:
-            print(cont, ":", p)
+            # print(cont, ":", p)
+            print("{}: ({}, {})".format(cont, p[0], p[1]))
             cont += 1       
         print("\nDeseja escolher qual opcao?")
         
@@ -470,7 +471,7 @@ class AI(Player):
         plays = self.get_valid_plays(tabuleiro)
         print("START MINIMAX")
                 
-        eval, play_coord = self.minimax(self.tabuleiro, None, self.difficult_level, True)
+        eval, play_coord = self.minimax(self.tabuleiro, None, self.difficult_level, True, -sys.maxsize, sys.maxsize)
         print("END OF MINIMAX: {}<-->{}".format(eval, play_coord))
         #print(plays)
         self.execute_catch(play_coord[0], play_coord[1], tabuleiro, player="Black")
@@ -480,7 +481,7 @@ class AI(Player):
         
 
 
-    def minimax(self, ai_board, player_play, depth, maximizing):
+    def minimax(self, ai_board, player_play, depth, maximizing, alpha, beta):
         if depth == 0:
             return self._eval_board(ai_board), player_play
         
@@ -496,13 +497,22 @@ class AI(Player):
                 actual_board = copy.deepcopy(ai_board)
                 self.execute_catch(play[0], play[1], actual_board, player="Black")
                 actual_board[play[0]][play[1]] = self.player
+
                 if depth == self.difficult_level:
-                    eval, play_coord = self.minimax(actual_board, play, depth - 1, False)
+                    eval, play_coord = self.minimax(actual_board, play, depth - 1, False, alpha, beta)
                 else:
-                    eval, play_coord = self.minimax(actual_board, player_play, depth - 1, False)
+                    eval, play_coord = self.minimax(actual_board, player_play, depth - 1, False, alpha, beta)
+                
                 if maxEval < eval:
                     maxEval = eval
                     maxPlay = play_coord
+                
+                # Check if alpha is less than beta
+                alpha = max(alpha, eval)
+                
+                if beta <= alpha:
+                    break
+
             return maxEval, maxPlay
         else:
             minEval = sys.maxsize
@@ -516,10 +526,18 @@ class AI(Player):
                 actual_board = copy.deepcopy(ai_board)
                 self.execute_catch(enemy_play[0], enemy_play[1], actual_board, player="White")
                 actual_board[enemy_play[0]][enemy_play[1]] = "White"
-                eval, play_coord  = self.minimax(actual_board, player_play, depth - 1, True)
+                eval, play_coord  = self.minimax(actual_board, player_play, depth - 1, True, alpha, beta)
+
                 if minEval > eval:
                     minEval = eval
                     minPlay = play_coord
+                
+                # Check if beta is less than alpha
+                beta = min(beta, eval)                
+                
+                if beta <= alpha:
+                    break
+
             return minEval, minPlay
 
     def _eval_board(self, tabuleiro):
