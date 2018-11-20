@@ -71,8 +71,14 @@ class Game:
     def game_loop(self):
         self.actual_player = self.player1 
         while(
-            self.actual_player.has_valid_plays(self.tabuleiro.get_tabuleiro())
+            self.player1.has_valid_plays(self.tabuleiro.get_tabuleiro()) or
+            self.player2.has_valid_plays(self.tabuleiro.get_tabuleiro())
+            # self.actual_player.has_valid_plays(self.tabuleiro.get_tabuleiro())
         ):
+            if self.actual_player.get_valid_plays() is None:
+                self.actual_player = self.get_next_player()
+                continue
+
             print("---------------\nACTUAL PLATER: {} \n---------------".format(self.actual_player.player))
             self.actual_player.run_play(self.tabuleiro.get_tabuleiro())
             

@@ -17,9 +17,9 @@ if difficult == 0:
         os.system('clear')
         print("\n\nFRACO!\nEscolha um nível mais dificil")
         print()
-        print("0 - Facil")
-        print("1 - Medio")
-        print("2 - Dificil")
+        print("1 - Facil")
+        print("2 - Medio")
+        print("3 - Dificil")
         difficult = int(input("Digite o numero da dificuldade desejado: "))
     
 os.system('clear')
